@@ -16,10 +16,10 @@ Authors: A. Bemporad, M. Zhu, S. Music
 
 import numpy as np
 import matplotlib.pyplot as plt
-from pyswarm import pso
-from glis.solvers import GLIS
 from math import sin, cos
 from itertools import chain
+from pyswarm import pso
+from glis.solvers import GLIS
 
 benchmark = "scalar_bemporad20"
 
@@ -35,12 +35,13 @@ if benchmark == "scalar_bemporad20":
     fopt0 = 0.2795  # unconstrained optimum
     max_evals = 20
 
-key = 1
-np.random.seed(key)  # rng default for reproducibility
-####################################################################################
+fixed_seed = 123
+np.random.seed(fixed_seed)
+
+n_init = 10
 print("Solve the problem incrementally (i.e., provide the function evaluation at each iteration)")
-# solve same problem, but incrementally
-prob = GLIS(bounds=(lb, ub), n_initial_random=10)
+
+prob = GLIS(bounds=(lb, ub), n_initial_random=n_init)
 x = prob.initialize()
 f_surr = np.array([])
 for k in range(max_evals):
@@ -56,11 +57,11 @@ fopt = prob.fbest
 # Plot
 print("Optimization finished. Draw the plot")
 
-plt.rcParams['text.usetex'] = True
 X_r = np.arange(lb, ub, 0.1)
 F_r = [funs(i) for i in X_r]
 
-plt.plot(X_r, F_r, label=r'$f(x)$')
+plt.plot(X_r, F_r, label=r'$function, f(x)$')
+# plt.plot(X, f_surr, label=r'$surrogate function, f_s(x)$')
 plt.plot(X[:9], F[:9], "o", label=r'init samples')
 plt.plot(X[10:], F[10:], "o", color = (0.5, 0.8, 0.9), label=r'glis samples')
 plt.plot(xopt0, fopt0, "*", label=r'real optimum')
@@ -71,6 +72,6 @@ plt.xlabel(r'$x$')
 plt.legend(fontsize=12)
 plt.grid()
 
-if savefigs:
-    plt.savefig("glis-1D.png", dpi=300)
+# if savefigs:
+    # plt.savefig("glis-1D.png", dpi=300)
 plt.show()
